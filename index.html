@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arbour — People Intelligence Infrastructure for Financial Services</title>
+  <meta name="description" content="Arbour structures your people data and gives AI the context to understand it — so the intelligence your firm has built over decades can finally be put to work." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════
+       NAVBAR
+  ══════════════════════════════════════ -->
+  <nav aria-label="Site navigation">
+    <a href="#" class="nav-logo" aria-label="Arbour homepage">Arbour</a>
+
+    <ul class="nav-links" role="list">
+      <li><a href="#entry-points">Software</a></li>
+      <li><a href="#timeline">Data Services</a></li>
+    </ul>
+
+    <div class="nav-right">
+      <a href="mailto:hello@arbour.com" class="btn btn-teal-outline">Request a conversation</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ══════════════════════════════════════
+         HERO
+    ══════════════════════════════════════ -->
+    <section id="hero" aria-label="Hero">
+      <canvas id="hero-canvas" aria-hidden="true"></canvas>
+
+      <div class="hero-content">
+        <p class="hero-eyebrow">People Intelligence Infrastructure</p>
+
+        <h1 class="hero-headline">
+          Financial services runs on people data.<br />
+          Almost none of it works for AI.
+        </h1>
+
+        <p class="hero-subhead">
+          Arbour structures your people data and gives AI the context to understand it
+          — so the intelligence your firm has built over decades can finally be put to work.
+        </p>
+
+        <div class="hero-ctas">
+          <a href="mailto:hello@arbour.com" class="btn btn-primary">Request a conversation</a>
+          <a href="#how-it-works" class="btn btn-outline">See the platform</a>
+        </div>
+
+        <div class="hero-rotating" aria-live="polite" aria-atomic="true">
+          <span class="hero-rotating-label">We help firms</span>
+          <span id="rotating-word" aria-label="rotating capability word"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         PROBLEM
+    ══════════════════════════════════════ -->
+    <section id="problem" aria-labelledby="problem-headline">
+      <div class="container">
+        <div class="problem-inner">
+          <p class="eyebrow">The problem</p>
+          <h2 id="problem-headline" class="section-headline">
+            Your people data is everywhere.<br />None of it is connected.
+          </h2>
+
+          <div class="problem-body">
+            <p>
+              Candidate histories in your ATS. Relationship context in recruiters' inboxes. Alumni networks no one can query. Lateral talent moving across the market with no visibility into who's qualified, who's available, and who fits. Every hiring cycle starts from scratch. Every AI initiative stalls because the underlying data isn't structured or contextualized enough to be useful.
+            </p>
+            <p class="problem-closer">
+              The problem isn't that your firm lacks people data. It's that your people data doesn't work.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         VISION
+    ══════════════════════════════════════ -->
+    <section id="vision" aria-labelledby="vision-headline">
+      <div class="container">
+        <div class="vision-inner">
+          <div class="vision-rule" aria-hidden="true"></div>
+          <blockquote>
+            <p id="vision-headline" class="vision-headline">
+              People data that compounds in value over time — the way your best investment research does.
+            </p>
+          </blockquote>
+          <p class="vision-subtext">
+            Arbour is building the people intelligence infrastructure for financial services. A structured, contextualized graph of human capital — internal and external — that gets more powerful the more your firm uses it. Not a tool. A foundation.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         HOW IT WORKS
+    ══════════════════════════════════════ -->
+    <section id="how-it-works" aria-labelledby="how-headline">
+      <div class="container">
+        <header class="how-header">
+          <p class="eyebrow">How it works</p>
+          <h2 id="how-headline" class="section-headline">One platform. Three layers. Built for financial services.</h2>
+        </header>
+
+        <div class="how-cards">
+
+          <!-- Card 1: People Graph -->
+          <article class="how-card">
+            <div class="how-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
+                <circle cx="20" cy="8"  r="3" stroke="currentColor" stroke-width="1.2"/>
+                <circle cx="8"  cy="30" r="3" stroke="currentColor" stroke-width="1.2"/>
+                <circle cx="32" cy="30" r="3" stroke="currentColor" stroke-width="1.2"/>
+                <circle cx="20" cy="22" r="2.5" stroke="currentColor" stroke-width="1.2"/>
+                <line x1="20" y1="11" x2="20" y2="19.5" stroke="currentColor" stroke-width="1"/>
+                <line x1="18.2" y1="23.8" x2="9.8" y2="27.4" stroke="currentColor" stroke-width="1"/>
+                <line x1="21.8" y1="23.8" x2="30.2" y2="27.4" stroke="currentColor" stroke-width="1"/>
+                <line x1="9"    y1="27.2" x2="18.5" y2="10.2" stroke="currentColor" stroke-width=".6" stroke-dasharray="2 2" opacity=".4"/>
+                <line x1="31"   y1="27.2" x2="21.5" y2="10.2" stroke="currentColor" stroke-width=".6" stroke-dasharray="2 2" opacity=".4"/>
+                <line x1="10"   y1="30"   x2="30"   y2="30"   stroke="currentColor" stroke-width=".6" stroke-dasharray="2 2" opacity=".4"/>
+              </svg>
+            </div>
+            <h3 class="how-card-title">People graph</h3>
+            <p class="how-card-body">
+              A proprietary network of structured people data covering students, professionals, and lateral candidates across financial services. Internal and external, unified in one place.
+            </p>
+          </article>
+
+          <!-- Card 2: Context Layer -->
+          <article class="how-card">
+            <div class="how-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
+                <path d="M6 28 L20 8 L34 28" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                <path d="M10 34 L20 16 L30 34" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" opacity=".55"/>
+                <path d="M14 40 L20 24 L26 40" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" opacity=".3"/>
+              </svg>
+            </div>
+            <h3 class="how-card-title">Context layer</h3>
+            <p class="how-card-body">
+              AI can read data. Arbour helps it understand what that data means. What a role signals. What seniority looks like at a fund versus a bank. The domain knowledge that makes people intelligence accurate.
+            </p>
+          </article>
+
+          <!-- Card 3: Intelligence Layer -->
+          <article class="how-card">
+            <div class="how-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
+                <circle cx="20" cy="20" r="3.5" stroke="currentColor" stroke-width="1.2"/>
+                <line x1="20" y1="4"  x2="20" y2="12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="20" y1="28" x2="20" y2="36" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="4"  y1="20" x2="12" y2="20" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="28" y1="20" x2="36" y2="20" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="7.5"  y1="7.5"  x2="13.2" y2="13.2" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity=".55"/>
+                <line x1="32.5" y1="7.5"  x2="26.8" y2="13.2" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity=".55"/>
+                <line x1="7.5"  y1="32.5" x2="13.2" y2="26.8" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity=".55"/>
+                <line x1="32.5" y1="32.5" x2="26.8" y2="26.8" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity=".55"/>
+              </svg>
+            </div>
+            <h3 class="how-card-title">Intelligence layer</h3>
+            <p class="how-card-body">
+              AI agents and custom applications that turn your structured people graph into decisions — faster sourcing, smarter screening, and use cases your team hasn't had the infrastructure to pursue.
+            </p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         USE CASES
+    ══════════════════════════════════════ -->
+    <section id="use-cases" aria-labelledby="usecases-headline">
+      <div class="container">
+        <header class="use-cases-header">
+          <p class="eyebrow">What becomes possible</p>
+          <h2 id="usecases-headline" class="section-headline">People data has always been valuable.<br />Now it's actionable.</h2>
+        </header>
+
+        <div class="use-cases-grid">
+
+          <!-- Block 1: Talent Acquisition -->
+          <article class="use-case-block">
+            <div class="use-case-graphic" aria-hidden="true">
+              <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" width="56" height="56">
+                <!-- funnel with nodes -->
+                <path d="M10 14 L46 14 L34 28 L34 44 L22 44 L22 28 Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" fill="none"/>
+                <circle cx="16" cy="11" r="2" fill="currentColor" opacity=".7"/>
+                <circle cx="28" cy="9"  r="2" fill="currentColor" opacity=".7"/>
+                <circle cx="40" cy="11" r="2" fill="currentColor" opacity=".7"/>
+                <circle cx="28" cy="36" r="2.5" stroke="currentColor" stroke-width="1" opacity=".9"/>
+              </svg>
+            </div>
+            <h3 class="use-case-title">Talent acquisition</h3>
+            <p class="use-case-body">
+              Source, screen, and identify the right candidates from inbound and outbound pipelines — with AI that understands what good looks like in financial services.
+            </p>
+          </article>
+
+          <!-- Block 2: Business Development -->
+          <article class="use-case-block">
+            <div class="use-case-graphic" aria-hidden="true">
+              <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" width="56" height="56">
+                <circle cx="28" cy="28" r="4"  stroke="currentColor" stroke-width="1.3"/>
+                <circle cx="28" cy="28" r="12" stroke="currentColor" stroke-width="1" opacity=".5"/>
+                <circle cx="28" cy="28" r="20" stroke="currentColor" stroke-width=".7" opacity=".25"/>
+                <circle cx="28" cy="4"  r="2" fill="currentColor" opacity=".6"/>
+                <circle cx="4"  cy="28" r="2" fill="currentColor" opacity=".6"/>
+                <circle cx="52" cy="28" r="2" fill="currentColor" opacity=".6"/>
+                <circle cx="28" cy="52" r="2" fill="currentColor" opacity=".6"/>
+              </svg>
+            </div>
+            <h3 class="use-case-title">Business development</h3>
+            <p class="use-case-body">
+              Identify prospective clients, relationship paths, and warm introductions using the same people graph that powers your hiring.
+            </p>
+          </article>
+
+          <!-- Block 3: Expert Networks -->
+          <article class="use-case-block">
+            <div class="use-case-graphic" aria-hidden="true">
+              <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" width="56" height="56">
+                <line x1="8"  y1="48" x2="48" y2="48" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="8"  y1="48" x2="8"  y2="8"  stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                <polyline points="8,40 18,28 28,32 38,16 48,10" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="8"  cy="40" r="2.2" fill="currentColor"/>
+                <circle cx="18" cy="28" r="2.2" fill="currentColor"/>
+                <circle cx="28" cy="32" r="2.2" fill="currentColor"/>
+                <circle cx="38" cy="16" r="2.2" fill="currentColor"/>
+                <circle cx="48" cy="10" r="2.2" fill="currentColor"/>
+              </svg>
+            </div>
+            <h3 class="use-case-title">Expert networks</h3>
+            <p class="use-case-body">
+              Surface internal and external subject matter experts for investment research, diligence, and advisory work — on demand.
+            </p>
+          </article>
+
+          <!-- Block 4: Investment Signals -->
+          <article class="use-case-block">
+            <div class="use-case-graphic" aria-hidden="true">
+              <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" width="56" height="56">
+                <circle cx="12" cy="28" r="5"  stroke="currentColor" stroke-width="1.3"/>
+                <circle cx="44" cy="28" r="5"  stroke="currentColor" stroke-width="1.3"/>
+                <!-- bridge line with gap -->
+                <line x1="17" y1="28" x2="24" y2="28" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="32" y1="28" x2="39" y2="28" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                <!-- gap bridge element -->
+                <path d="M24 28 Q28 18 32 28" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                <!-- movement arrows -->
+                <polyline points="7,22 12,17 17,22" stroke="currentColor" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".5"/>
+                <polyline points="39,34 44,39 49,34" stroke="currentColor" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".5"/>
+              </svg>
+            </div>
+            <h3 class="use-case-title">Investment signals</h3>
+            <p class="use-case-body">
+              Track career movements, org changes, and talent flows across the market as a leading indicator of company and sector activity.
+            </p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         ENTRY POINTS
+    ══════════════════════════════════════ -->
+    <section id="entry-points" aria-labelledby="entry-headline">
+      <div class="container">
+        <header class="entry-header">
+          <p class="eyebrow">Two ways to work with Arbour</p>
+          <h2 id="entry-headline" class="section-headline">Software or deep partnership — your call.</h2>
+        </header>
+
+        <div class="entry-cards">
+
+          <article class="entry-card">
+            <div class="entry-card-accent teal" aria-hidden="true"></div>
+            <div class="entry-card-inner">
+              <span class="entry-tag teal">Software</span>
+              <h3 class="entry-card-title">AI agents for talent teams</h3>
+              <p class="entry-card-body">
+                Purpose-built agents that handle inbound screening, outbound sourcing, and lateral search. Try it with a free query — no implementation required.
+              </p>
+              <a href="#" class="entry-card-cta">Explore the software →</a>
+            </div>
+          </article>
+
+          <article class="entry-card">
+            <div class="entry-card-accent amber" aria-hidden="true"></div>
+            <div class="entry-card-inner">
+              <span class="entry-tag amber">Data Services</span>
+              <h3 class="entry-card-title">Your people data transformation partner</h3>
+              <p class="entry-card-body">
+                We embed inside your organization, connect your dormant people data to our graph, and build the AI applications your executive team has been asked to deliver. Implementation fee, data licensing, ongoing subscription.
+              </p>
+              <a href="#timeline" class="entry-card-cta amber">Explore data services →</a>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         TIMELINE
+    ══════════════════════════════════════ -->
+    <section id="timeline" aria-labelledby="timeline-headline">
+      <div class="container">
+        <header class="timeline-header">
+          <p class="eyebrow">How an engagement works</p>
+          <h2 id="timeline-headline" class="section-headline">From discovery to production.<br />In weeks, not years.</h2>
+        </header>
+
+        <div class="timeline-track">
+          <div class="timeline-line" aria-hidden="true"></div>
+
+          <div class="timeline-stages">
+
+            <div class="timeline-stage">
+              <div class="stage-dot-wrap" aria-hidden="true">
+                <div class="stage-dot"></div>
+              </div>
+              <p class="stage-label">Weeks 1–2</p>
+              <h3 class="stage-title">Discovery</h3>
+              <p class="stage-body">
+                We embed with your team. Map your existing people data sources, systems, and use cases. Identify where the highest-value applications live.
+              </p>
+            </div>
+
+            <div class="timeline-stage">
+              <div class="stage-dot-wrap" aria-hidden="true">
+                <div class="stage-dot"></div>
+              </div>
+              <p class="stage-label">Weeks 3–4</p>
+              <h3 class="stage-title">Architecture</h3>
+              <p class="stage-body">
+                We connect your internal data to the Arbour people graph. Build the context layer for your specific organization — roles, hierarchies, workflows.
+              </p>
+            </div>
+
+            <div class="timeline-stage">
+              <div class="stage-dot-wrap" aria-hidden="true">
+                <div class="stage-dot"></div>
+              </div>
+              <p class="stage-label">Weeks 5–8</p>
+              <h3 class="stage-title">Build</h3>
+              <p class="stage-body">
+                Custom AI applications are built on top of your unified people graph. Agents for your specific workflows. Integrated into systems your team already uses.
+              </p>
+            </div>
+
+            <div class="timeline-stage">
+              <div class="stage-dot-wrap" aria-hidden="true">
+                <div class="stage-dot"></div>
+              </div>
+              <p class="stage-label">Week 8+</p>
+              <h3 class="stage-title">Partner</h3>
+              <p class="stage-body">
+                We stay. Ongoing subscription covers data licensing, agent maintenance, and continued development as your use cases expand.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         OBJECTIONS
+    ══════════════════════════════════════ -->
+    <section id="objections" aria-labelledby="objections-headline">
+      <div class="container">
+        <header class="objections-header">
+          <p class="eyebrow">Common questions</p>
+          <h2 id="objections-headline" class="section-headline">Things worth knowing before you reach out.</h2>
+        </header>
+
+        <div class="accordion" role="list">
+
+          <div class="accordion-item" role="listitem">
+            <button class="accordion-trigger" aria-expanded="false">
+              <span>How do you handle data privacy and compliance?</span>
+              <svg class="accordion-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <line x1="10" y1="3" x2="10" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="3"  y1="10" x2="17" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <div class="accordion-body" role="region">
+              <div class="accordion-body-inner">
+                Student and consumer data on the Arbour platform is fully opt-in — individuals control what they share. Third-party data is sourced from licensed providers under established data agreements. We are designed for the compliance requirements of financial services from day one.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item" role="listitem">
+            <button class="accordion-trigger" aria-expanded="false">
+              <span>How is our internal data protected?</span>
+              <svg class="accordion-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <line x1="10" y1="3" x2="10" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="3"  y1="10" x2="17" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <div class="accordion-body" role="region">
+              <div class="accordion-body-inner">
+                Client internal data never touches Arbour's shared infrastructure. Your people data is processed in isolated environments with enterprise-grade security controls. We work within your existing security review and procurement processes.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item" role="listitem">
+            <button class="accordion-trigger" aria-expanded="false">
+              <span>What does an engagement actually cost?</span>
+              <svg class="accordion-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <line x1="10" y1="3" x2="10" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="3"  y1="10" x2="17" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <div class="accordion-body" role="region">
+              <div class="accordion-body-inner">
+                Data services engagements are structured as an implementation fee followed by a recurring subscription covering data licensing and the applications we build together. Software tiers are separately priced. We scope every engagement based on your data environment and use cases — contact us to get a sense of fit.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         PROOF
+    ══════════════════════════════════════ -->
+    <section id="proof" aria-label="Social proof">
+      <div class="container">
+
+        <div class="proof-stats">
+          <div>
+            <p class="stat-number">50,000+</p>
+            <p class="stat-label">Students on platform</p>
+          </div>
+          <div>
+            <p class="stat-number">1,000+</p>
+            <p class="stat-label">Schools and university clubs</p>
+          </div>
+          <div>
+            <p class="stat-number">$8.5M</p>
+            <p class="stat-label">Raised from operators in tech, finance, and consulting</p>
+          </div>
+        </div>
+
+        <div class="proof-logos">
+          <span class="proof-logos-label">Trusted by</span>
+          <span class="client-pill">Point72</span>
+          <span class="client-pill">Carlyle</span>
+          <span class="client-pill">Warburg Pincus</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         CLOSING CTA
+    ══════════════════════════════════════ -->
+    <section id="cta" aria-labelledby="cta-headline">
+      <div class="container">
+        <h2 id="cta-headline" class="cta-headline">Ready to make your people data work?</h2>
+        <p class="cta-subtext">Talk to us about where Arbour fits in your firm.</p>
+        <a href="mailto:hello@arbour.com" class="btn btn-primary" style="font-size:15px;padding:14px 32px;">
+          Request a conversation
+        </a>
+        <a href="mailto:hello@arbour.com" class="cta-email">hello@arbour.com</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══════════════════════════════════════
+       FOOTER
+  ══════════════════════════════════════ -->
+  <footer>
+    <span class="footer-logo">Arbour</span>
+    <p class="footer-copy">© 2025 Arbour. People intelligence infrastructure for financial services.</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
