@@ -37,8 +37,8 @@
   function maxParticles() { return isMobile() ? 40 : 80; }
 
   function resize() {
-    canvas.width  = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
+    canvas.width  = canvas.offsetWidth  || window.innerWidth;
+    canvas.height = canvas.offsetHeight || window.innerHeight;
   }
 
   function Particle(w, h) {
@@ -158,19 +158,26 @@
     scrambleRaf = requestAnimationFrame(frame);
   }
 
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   function cycle() {
     current = (current + 1) % words.length;
-    scramble(words[current]);
+    if (reducedMotion) {
+      el.textContent = words[current];
+    } else {
+      scramble(words[current]);
+    }
   }
 
   /* init */
   el.textContent = words[0];
-  const intervalId = setInterval(cycle, 2500);
+  let intervalId = setInterval(cycle, 2500);
 
-  /* pause when tab hidden */
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       clearInterval(intervalId);
+    } else {
+      intervalId = setInterval(cycle, 2500);
     }
   });
 })();
