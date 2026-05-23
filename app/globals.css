@@ -110,6 +110,10 @@ section[id] { scroll-margin-top: 80px; }
   0%, 100% { opacity: 1; transform: scale(1); }
   50%       { opacity: 0.4; transform: scale(0.75); }
 }
+@keyframes bob {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%       { transform: translateX(-50%) translateY(6px); }
+}
 
 .animate-fade-up {
   animation: fadeUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -119,6 +123,9 @@ section[id] { scroll-margin-top: 80px; }
 }
 .status-pulse {
   animation: pulse 2s ease-in-out infinite;
+}
+.animate-bob {
+  animation: bob 2s ease-in-out infinite;
 }
 
 /* Reduced motion */
