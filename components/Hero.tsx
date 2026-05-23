@@ -263,7 +263,10 @@ export default function Hero() {
         ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2)
         ctx.fillStyle   = n.isGreen ? GREEN : 'transparent'
         ctx.fill()
-        ctx.strokeStyle = n.isGreen ? GREEN : GREY_NODE
+        // GREY_NODE has built-in 0.45 alpha — use solid rgb for sonar-only so
+        // globalAlpha=0.15 gives a true 15% opacity stroke instead of 6.7%
+        const sonarOnly = n.sonarAlpha > 0 && n.alpha < 0.01
+        ctx.strokeStyle = n.isGreen ? GREEN : (sonarOnly ? 'rgb(200,200,190)' : GREY_NODE)
         ctx.lineWidth   = n.isGreen ? 1.5 : 1
         ctx.stroke()
         if (n.isGreen) {
@@ -341,8 +344,8 @@ export default function Hero() {
           style={{ fontSize: 'clamp(32px,5.5vw,56px)' }}
         >
           Your most underutilized asset<br />
-          isn&apos;t financial. It&apos;s human.<br />
-          <span style={{ color: '#2D9E5F' }}>One intelligence system.</span>
+          isn&apos;t financial.{' '}
+          <span style={{ color: '#2D9E5F' }}>It&apos;s human.</span>
         </h1>
 
         <p
@@ -354,6 +357,16 @@ export default function Hero() {
           firm needs to know something about people: a hire, a prospect, a
           relationship, a signal — the answer is already there. Yesterday.
         </p>
+
+        <div className="mt-8 pointer-events-auto">
+          <a
+            href="#start"
+            className="animate-hero-float inline-block font-sans text-[13px] font-semibold text-dark bg-beige hover:bg-beige/90 px-5 py-2 rounded-full transition-colors duration-200"
+            style={{ letterSpacing: '0.04em' }}
+          >
+            Get Started
+          </a>
+        </div>
       </div>
 
       <div
