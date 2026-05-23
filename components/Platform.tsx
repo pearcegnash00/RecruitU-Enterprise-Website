@@ -7,7 +7,7 @@ const cards = [
   {
     num: 'P.02',
     title: 'Builders who understand the domain.',
-    body: 'Our engineers and product team came from financial services, data infrastructure, and enterprise AI. They know what a VP at Goldman means versus a VP at a 10-person fund. They build for the edge cases that matter.',
+    body: "Our engineers and product team came from financial services, data infrastructure, and enterprise AI. They've lived the systems they now build against — the schemas, the failure modes, the workarounds that accumulate over decades. They build for the edge cases that matter.",
   },
   {
     num: 'P.03',
@@ -47,27 +47,14 @@ export default function Platform() {
         {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 border border-beige/[0.08] divide-x divide-beige/[0.08]">
           {cards.map(c => (
-            <article key={c.num} className="bg-dark relative min-h-[420px] p-11">
-              <span className="font-mono text-[11px] tracking-[0.88px] text-beige/30 mb-16 block">{c.num}</span>
-
-              {/* Icon placeholder */}
-              <div
-                className="w-full aspect-[4/3] border border-beige/[0.08] rounded-sm mb-10 flex items-center justify-center"
-                style={{
-                  backgroundImage: `
-                    linear-gradient(rgba(240,237,232,0.04) 5%, transparent 5%),
-                    linear-gradient(90deg, rgba(240,237,232,0.04) 5%, transparent 5%)
-                  `,
-                  backgroundSize: '20px 20px',
-                }}
-              >
-                <div className="w-4 h-4 rounded-full border border-teal/40 bg-teal/10" />
+            <article key={c.num} className="bg-dark relative p-11 flex flex-col gap-8">
+              <span className="font-mono text-[11px] tracking-[0.88px] text-beige/30">{c.num}</span>
+              <div className="flex flex-col gap-4 flex-1">
+                <h3 className="font-sans font-medium text-[20px] tracking-tight text-beige leading-[1.35]">
+                  {c.title}
+                </h3>
+                <p className="font-sans text-[13px] text-beige/56 leading-[1.9]">{c.body}</p>
               </div>
-
-              <h3 className="font-sans font-medium text-[20px] tracking-tight text-beige leading-[1.65] mb-4">
-                {c.title}
-              </h3>
-              <p className="font-sans text-[13px] text-beige/56 leading-[1.9]">{c.body}</p>
             </article>
           ))}
         </div>

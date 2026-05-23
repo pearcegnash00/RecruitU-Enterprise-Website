@@ -37,7 +37,7 @@ export default function FAQ() {
             <span className="text-beige/30"> Questions we hear often</span>
           </p>
           <h2 className="font-sans font-medium text-[clamp(28px,3.5vw,48px)] tracking-tighter text-beige leading-[1.18]">
-            Questions we<br />hear often.
+            The details that matter<br />before you commit.
           </h2>
         </div>
 

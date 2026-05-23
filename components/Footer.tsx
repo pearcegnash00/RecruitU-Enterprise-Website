@@ -7,7 +7,7 @@ export default function Footer() {
           {/* Wordmark */}
           <p
             className="font-sans font-medium text-beige leading-none select-none"
-            style={{ fontSize: 'clamp(80px, 14vw, 180px)', letterSpacing: '-0.05em', lineHeight: 1 }}
+            style={{ fontSize: 'clamp(48px, 14vw, 180px)', letterSpacing: '-0.05em', lineHeight: 1 }}
           >
             ARBOUR
           </p>

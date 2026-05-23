@@ -200,6 +200,7 @@ export default function Hero() {
     >
       <canvas
         ref={canvasRef}
+        data-hero-canvas
         className="absolute inset-0 w-full h-full pointer-events-none"
         aria-hidden="true"
       />
@@ -249,7 +250,7 @@ export default function Hero() {
 
       {/* Fade to next section */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none z-5"
+        className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
         style={{ background: 'linear-gradient(to bottom, transparent, rgba(17,24,16,0.5))' }}
       />
     </section>

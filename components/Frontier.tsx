@@ -50,7 +50,7 @@ export default function Frontier() {
           {cards.map((c, i) => (
             <article
               key={c.num}
-              className={`frontier-card relative bg-beige px-8 pt-10 pb-16 ${i === 2 ? '' : ''}`}
+              className="relative bg-beige px-8 pt-10 pb-16"
             >
               <p className="font-mono text-[10px] tracking-[1px] text-near-black/25 mb-5">{c.num}</p>
               <h3 className="font-sans font-medium text-[20px] tracking-tight text-near-black mb-3 mt-4">

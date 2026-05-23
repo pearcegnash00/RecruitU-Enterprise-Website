@@ -31,6 +31,7 @@ export default function Nav() {
   return (
     <nav
       id="site-nav"
+      aria-label="Main navigation"
       className={`
         fixed top-5 left-1/2 -translate-x-1/2 z-50
         flex items-center h-11 pl-[18px] pr-1.5 gap-0
