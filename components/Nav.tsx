@@ -1,71 +1,39 @@
 'use client'
-import { useEffect, useState } from 'react'
-
-const links = [
-  { label: 'Home',                href: '#hero' },
-  { label: 'Vision',              href: '#frontier' },
-  { label: 'Platform',            href: '#platform' },
-  { label: 'Product',             href: '#start' },
-  { label: 'Investment Approach', href: '#proof' },
-  { label: 'Insights',            href: '#faq' },
-]
 
 export default function Nav() {
-  const [scrolled, setScrolled] = useState(false)
-
-  useEffect(() => {
-    let ticking = false
-    const onScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          setScrolled(window.scrollY > 40)
-          ticking = false
-        })
-        ticking = true
-      }
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
   return (
     <nav
       id="site-nav"
       aria-label="Main navigation"
-      className={`
-        fixed top-5 left-1/2 -translate-x-1/2 z-50
-        flex items-center h-11 pl-[18px] pr-1.5 gap-0
-        border border-white/10 rounded-full
-        whitespace-nowrap transition-all duration-300
-        ${scrolled
-          ? 'bg-[rgba(17,24,16,0.96)] shadow-[0_2px_24px_rgba(0,0,0,0.4)] backdrop-blur-xl'
-          : 'bg-[rgba(17,24,16,0.75)] shadow-[0_2px_16px_rgba(0,0,0,0.25)] backdrop-blur-md'
-        }
-      `}
+      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 pt-5"
     >
-      <span className="font-mono text-[13px] font-medium tracking-mono text-beige/90 mr-7">
-        ARBOUR
-      </span>
+      {/* Logo */}
+      <div className="flex items-center gap-2.5">
+        <div className="w-4 h-4 rounded-full border border-[#2D9E5F] flex items-center justify-center flex-shrink-0">
+          <div className="w-1.5 h-1.5 rounded-full bg-[#2D9E5F]" />
+        </div>
+        <span className="font-display text-[13px] font-semibold tracking-[0.1em] text-beige/90 select-none">
+          ARBOUR
+        </span>
+      </div>
 
-      <ul className="hidden md:flex items-center gap-6 mr-6 list-none">
-        {links.map(l => (
-          <li key={l.label}>
-            <a
-              href={l.href}
-              className="font-sans text-[13px] text-beige/50 hover:text-beige/90 transition-colors duration-200"
-            >
-              {l.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-
-      <a
-        href="#start"
-        className="font-sans text-[13px] font-medium text-dark bg-beige/90 hover:bg-beige px-4 py-2 rounded-full transition-colors duration-200"
-      >
-        Contact Us
-      </a>
+      {/* Right controls */}
+      <div className="flex items-center gap-3">
+        <a
+          href="#start"
+          className="font-sans text-[13px] font-medium text-dark bg-beige/90 hover:bg-beige px-5 py-2 rounded-full transition-colors duration-200"
+        >
+          Get Started
+        </a>
+        <button
+          aria-label="Open menu"
+          className="flex flex-col gap-[4px] p-2 -mr-2"
+        >
+          <span className="block w-[18px] h-[1.5px] bg-beige/80" />
+          <span className="block w-[18px] h-[1.5px] bg-beige/80" />
+          <span className="block w-[18px] h-[1.5px] bg-beige/80" />
+        </button>
+      </div>
     </nav>
   )
 }

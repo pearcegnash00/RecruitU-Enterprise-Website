@@ -8,12 +8,10 @@ import StartWhere from '@/components/StartWhere'
 import Proof      from '@/components/Proof'
 import FAQ        from '@/components/FAQ'
 import Footer     from '@/components/Footer'
-import Cursor     from '@/components/Cursor'
 
 export default function Home() {
   return (
     <>
-      <Cursor />
       <Nav />
       <main>
         <Hero />

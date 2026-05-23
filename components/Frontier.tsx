@@ -18,51 +18,45 @@ export default function Frontier() {
   ]
 
   return (
-    <section id="frontier" className="bg-beige py-[110px] px-10">
+    <section id="frontier" className="bg-off-white py-[110px] px-10">
       <div className="max-w-content mx-auto px-14">
 
-        {/* Text block */}
         <div className="max-w-[680px] pb-20">
-          <p className="font-mono text-[10px] tracking-widest uppercase mb-5">
-            <span className="text-teal">01 —</span>
-            <span className="text-near-black/38"> The next frontier</span>
+          <p className="font-display text-[10px] tracking-widest uppercase mb-5">
+            <span className="text-forest">01 —</span>
+            <span className="text-ink/38"> The next frontier</span>
           </p>
 
-          <h2 className="font-sans font-medium text-[clamp(28px,3.5vw,44px)] tracking-tighter text-near-black leading-[1.18] mb-7">
+          <h2 className="font-display font-medium text-[clamp(28px,3.5vw,44px)] tracking-tighter text-ink leading-[1.18] mb-7">
             AI has already transformed how financial services firms trade, risk,
             and comply. People data is next.
           </h2>
 
-          <p className="font-sans text-[15px] text-mid-gray leading-[1.95] mb-5">
+          <p className="font-sans text-[15px] text-ink-mid leading-[1.95] mb-5">
             The infrastructure already exists for financial data — structured, queryable, AI-ready.
             The same transformation is coming for people data. The firms that build the right
             foundation now will compound that advantage for years. The firms that wait will start
             from scratch when their competitors already have a two-year head start.
           </p>
 
-          <p className="font-mono text-[13px] text-near-black/50 tracking-[0.52px]">
+          <p className="font-sans text-[13px] text-ink/50 tracking-[0.52px]">
             Before we get there, three fundamental problems need to be solved.
           </p>
         </div>
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 border border-black/[0.08] divide-x divide-black/[0.08]">
-          {cards.map((c, i) => (
-            <article
-              key={c.num}
-              className="relative bg-beige px-8 pt-10 pb-16"
-            >
-              <p className="font-mono text-[10px] tracking-[1px] text-near-black/25 mb-5">{c.num}</p>
-              <h3 className="font-sans font-medium text-[20px] tracking-tight text-near-black mb-3 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 border border-ink/[0.10] divide-x divide-ink/[0.10]">
+          {cards.map(c => (
+            <article key={c.num} className="relative bg-off-white px-8 pt-10 pb-16">
+              <p className="font-sans text-[10px] tracking-[1px] text-ink/25 mb-5">{c.num}</p>
+              <h3 className="font-display font-medium text-[20px] tracking-tight text-ink mb-3 mt-4">
                 {c.title}
               </h3>
-              <p className="font-sans text-[13px] text-mid-gray leading-[1.9]">{c.body}</p>
+              <p className="font-sans text-[13px] text-ink-mid leading-[1.9]">{c.body}</p>
             </article>
           ))}
         </div>
 
-        {/* Closing */}
-        <p className="font-sans font-medium text-[clamp(18px,2.2vw,30px)] text-near-black text-center tracking-tight leading-[1.6] mt-14 max-w-[820px] mx-auto">
+        <p className="font-display font-medium text-[clamp(18px,2.2vw,30px)] text-ink text-center tracking-tight leading-[1.6] mt-14 max-w-[820px] mx-auto">
           This isn&rsquo;t a data problem. It&rsquo;s an infrastructure problem.
           And infrastructure is what we build.
         </p>

@@ -8,21 +8,30 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        'dark':       '#111810',
-        'dark-alt':   '#0a0f0c',
-        'beige':      '#f0ede8',
-        'beige-dim':  '#e8e5e0',
-        'teal':       '#0f6e56',
-        'teal-bright':'#13896a',
-        'amber':      '#ba7517',
+        // Hero / dark surfaces
+        'dark':        '#111810',
+        'dark-alt':    '#0a0f0c',
+        'beige':       '#f0ede8',
+        'beige-dim':   '#e8e5e0',
+        'chartreuse':  '#8dc83c',
+        'amber':       '#ba7517',
         'amber-bright':'#d4891e',
-        'chartreuse': '#8dc83c',
-        'near-black': '#111110',
-        'mid-gray':   '#555550',
+        // Legacy teal (hero canvas only)
+        'teal':        '#0f6e56',
+        'teal-bright': '#13896a',
+        // Light sections palette
+        'off-white':   '#F5F2EC',
+        'ink':         '#1A1A18',
+        'ink-mid':     '#6b6a65',
+        'forest':      '#1A6B3C',
+        // Legacy tokens still referenced in light sections
+        'near-black':  '#111110',
+        'mid-gray':    '#555550',
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'Helvetica Neue', 'Arial', 'sans-serif'],
-        mono: ['var(--font-mono)', 'IBM Plex Mono', 'Courier New', 'monospace'],
+        sans:    ['var(--font-inter)',         'Helvetica Neue', 'Arial', 'sans-serif'],
+        display: ['var(--font-space-grotesk)', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        mono:    ['var(--font-inter)',         'Arial',          'sans-serif'],
       },
       letterSpacing: {
         tightest: '-0.04em',

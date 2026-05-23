@@ -1,18 +1,17 @@
 'use client'
 import { useEffect, useRef } from 'react'
 
-const RAW: [number, number][] = [
-  [0.06,0.10],[0.14,0.22],[0.08,0.38],[0.18,0.52],[0.06,0.65],
-  [0.14,0.78],[0.24,0.12],[0.30,0.30],[0.22,0.45],[0.28,0.62],
-  [0.20,0.80],[0.36,0.18],[0.38,0.38],[0.34,0.55],[0.30,0.72],
-  [0.38,0.85],[0.46,0.10],[0.48,0.28],[0.44,0.48],[0.42,0.65],
-  [0.48,0.82],[0.56,0.16],[0.54,0.35],[0.58,0.55],[0.52,0.72],
-  [0.56,0.88],[0.64,0.08],[0.66,0.26],[0.62,0.44],[0.68,0.62],
-  [0.60,0.78],[0.72,0.18],[0.74,0.38],[0.70,0.55],[0.76,0.72],
-  [0.68,0.88],[0.80,0.10],[0.82,0.28],[0.78,0.48],[0.84,0.65],
-  [0.76,0.82],[0.88,0.20],[0.90,0.40],[0.86,0.58],[0.92,0.75],
-  [0.82,0.90],[0.94,0.12],[0.96,0.32],[0.92,0.88],[0.98,0.55],
-]
+// Seeded LCG for deterministic node positions
+function lcg(seed: number) {
+  let s = seed >>> 0
+  return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296 }
+}
+
+const _r = lcg(0xab1f9c)
+const RAW: [number, number][] = Array.from({ length: 120 }, (): [number, number] => [
+  0.03 + _r() * 0.94,
+  0.03 + _r() * 0.94,
+])
 
 type NodeObj = {
   rx: number; ry: number; x: number; y: number
@@ -21,7 +20,7 @@ type NodeObj = {
 
 function buildEdges(nodes: NodeObj[]) {
   const edges: [number, number][] = []
-  const maxDist = 0.18
+  const maxDist = 0.11 // tighter threshold — real network feel, not a web
   for (let i = 0; i < nodes.length; i++) {
     for (let j = i + 1; j < nodes.length; j++) {
       const dx = nodes[i].rx - nodes[j].rx
@@ -33,22 +32,22 @@ function buildEdges(nodes: NodeObj[]) {
 }
 
 export default function Hero() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const canvasRef  = useRef<HTMLCanvasElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
-    const canvas = canvasRef.current!
+    const canvas  = canvasRef.current!
     const section = sectionRef.current!
     if (!canvas || !section) return
     const ctx = canvas.getContext('2d')!
     if (!ctx) return
 
     const GREEN      = '#2D9E5F'
-    const GREY_NODE  = 'rgba(200,200,190,0.55)'
-    const GREY_EDGE  = 'rgba(200,200,190,0.12)'
-    const GREEN_EDGE = 'rgba(45,158,95,0.75)'
+    const GREY_NODE  = 'rgba(200,200,190,0.45)'
+    const GREY_EDGE  = 'rgba(200,200,190,0.10)'
+    const GREEN_EDGE = 'rgba(45,158,95,0.65)'
     const REVEAL_R   = 130
     const HOVER_R    = 14
     const BG_COLOR   = 'rgba(17,24,16,0.9)'
@@ -71,16 +70,15 @@ export default function Hero() {
       nodes.forEach(n => { n.x = n.rx * W; n.y = n.ry * H })
     }
 
-    // Phantom cursor: slowly orbits the canvas centre so the graph is
-    // never blank. Immediately yields when the real mouse enters the section.
-    const phantom = { x: W * 0.5, y: H * 0.5, t: 0 }
+    // Phantom cursor orbits the canvas so the graph is never blank on load
+    const phantom = { x: 0, y: 0, t: 0 }
     const mouse   = { x: -9999, y: -9999, real: false }
 
     function updatePhantom() {
       if (mouse.real) return
       phantom.t += 0.004
-      const tx = W  * (0.5 + Math.cos(phantom.t)        * 0.28)
-      const ty = H  * (0.5 + Math.sin(phantom.t * 0.65) * 0.22)
+      const tx = W * (0.5 + Math.cos(phantom.t)        * 0.28)
+      const ty = H * (0.5 + Math.sin(phantom.t * 0.65) * 0.22)
       phantom.x += (tx - phantom.x) * 0.018
       phantom.y += (ty - phantom.y) * 0.018
     }
@@ -89,25 +87,23 @@ export default function Hero() {
 
     function tick() {
       ctx.clearRect(0, 0, W, H)
-
       updatePhantom()
       const mx = mouse.real ? mouse.x : phantom.x
       const my = mouse.real ? mouse.y : phantom.y
 
       nodes.forEach(n => {
-        const dist     = Math.hypot(n.x - mx, n.y - my)
-        const inRadius = dist < REVEAL_R
-        const onNode   = dist < HOVER_R
-        if (inRadius && onNode) n.discovered = true
-        n.alpha  += ((inRadius ? 1 : 0) - n.alpha) * 0.14
-        n.isGreen = n.discovered || (inRadius && onNode)
+        const dist    = Math.hypot(n.x - mx, n.y - my)
+        const inR     = dist < REVEAL_R
+        const onNode  = dist < HOVER_R
+        if (inR && onNode) n.discovered = true
+        n.alpha  += ((inR ? 1 : 0) - n.alpha) * 0.14
+        n.isGreen = n.discovered || (inR && onNode)
       })
 
       edges.forEach(([a, b], i) => {
         if (nodes[a].discovered && nodes[b].discovered) edgeDiscovered[i] = true
       })
 
-      // Draw edges
       edges.forEach(([a, b], i) => {
         const na = nodes[a], nb = nodes[b]
         const ea = Math.min(na.alpha, nb.alpha)
@@ -124,12 +120,10 @@ export default function Hero() {
         ctx.restore()
       })
 
-      // Draw nodes
       nodes.forEach(n => {
         if (n.alpha < 0.01) return
         ctx.save()
         ctx.globalAlpha = n.alpha
-
         ctx.beginPath()
         ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2)
         ctx.fillStyle   = n.isGreen ? GREEN : 'transparent'
@@ -137,14 +131,11 @@ export default function Hero() {
         ctx.strokeStyle = n.isGreen ? GREEN : GREY_NODE
         ctx.lineWidth   = n.isGreen ? 1.5 : 1
         ctx.stroke()
-
         if (n.isGreen) {
-          // head
           ctx.beginPath()
           ctx.arc(n.x, n.y - n.r * 0.22, n.r * 0.34, 0, Math.PI * 2)
           ctx.fillStyle = BG_COLOR
           ctx.fill()
-          // body
           ctx.save()
           ctx.beginPath()
           ctx.arc(n.x, n.y + n.r * 1.1, n.r * 0.72, 0, Math.PI, true)
@@ -156,7 +147,6 @@ export default function Hero() {
           ctx.fill()
           ctx.restore()
         }
-
         ctx.restore()
       })
 
@@ -164,10 +154,10 @@ export default function Hero() {
     }
 
     function onMove(e: MouseEvent) {
-      const rect  = canvas.getBoundingClientRect()
-      mouse.x     = e.clientX - rect.left
-      mouse.y     = e.clientY - rect.top
-      mouse.real  = true
+      const rect = canvas.getBoundingClientRect()
+      mouse.x    = e.clientX - rect.left
+      mouse.y    = e.clientY - rect.top
+      mouse.real = true
     }
     function onLeave() { mouse.real = false }
     function onResize() { resize() }
@@ -177,8 +167,6 @@ export default function Hero() {
     phantom.y = H * 0.5
 
     raf = requestAnimationFrame(tick)
-
-    // Use window so events fire regardless of which element is on top
     window.addEventListener('mousemove', onMove)
     section.addEventListener('mouseleave', onLeave)
     window.addEventListener('resize', onResize, { passive: true })
@@ -205,10 +193,9 @@ export default function Hero() {
         aria-hidden="true"
       />
 
-      {/* Centred headline */}
       <div className="absolute inset-0 z-10 pointer-events-none flex flex-col items-center justify-center text-center px-8">
         <h1
-          className="font-sans font-bold text-beige leading-[1.08] tracking-[-0.03em]"
+          className="font-display font-bold text-beige leading-[1.06] tracking-[-0.03em]"
           style={{ fontSize: 'clamp(32px,5.5vw,56px)' }}
         >
           Your people knowledge.<br />
@@ -217,8 +204,8 @@ export default function Hero() {
         </h1>
 
         <p className="mt-6 font-sans text-[15px] text-beige/50 max-w-[440px] leading-relaxed">
-          We connect the people data your firm has spent decades building
-          — and make it queryable, actionable, and compounding.
+          We connect the people data your firm has spent decades building:
+          queryable, actionable, and compounding.
         </p>
 
         <div className="mt-8 pointer-events-auto">
@@ -232,7 +219,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Scroll arrow */}
       <div
         className="animate-bob absolute bottom-7 left-1/2 z-20 flex flex-col items-center gap-1.5"
         style={{ transform: 'translateX(-50%)' }}
@@ -248,7 +234,6 @@ export default function Hero() {
         />
       </div>
 
-      {/* Fade to next section */}
       <div
         className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
         style={{ background: 'linear-gradient(to bottom, transparent, rgba(17,24,16,0.5))' }}
