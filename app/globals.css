@@ -20,9 +20,9 @@ body {
   overflow-x: hidden;
 }
 
-/* Custom cursor */
+/* Custom cursor — only hidden once JS confirms it's active */
 @media (pointer: fine) {
-  body { cursor: none; }
+  body.cursor-ready { cursor: none; }
 }
 
 #cursor-dot,

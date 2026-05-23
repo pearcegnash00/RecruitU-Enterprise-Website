@@ -10,6 +10,9 @@ export default function Cursor() {
     const ring = document.getElementById('cursor-ring')
     if (!dot || !ring) return
 
+    // Hide native cursor only once custom cursor is confirmed active
+    document.body.classList.add('cursor-ready')
+
     let mx = -100, my = -100
     let rx = -100, ry = -100
 
@@ -31,7 +34,10 @@ export default function Cursor() {
     document.addEventListener('mousemove', onMove)
     animateRing()
 
-    return () => document.removeEventListener('mousemove', onMove)
+    return () => {
+      document.removeEventListener('mousemove', onMove)
+      document.body.classList.remove('cursor-ready')
+    }
   }, [])
 
   return (

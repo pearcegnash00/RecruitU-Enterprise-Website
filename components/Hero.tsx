@@ -33,15 +33,15 @@ function buildEdges(nodes: NodeObj[]) {
 }
 
 export default function Hero() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
-  const canvasRef  = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
+    const canvas = canvasRef.current!
     const section = sectionRef.current!
-    const canvas  = canvasRef.current!
-    if (!section || !canvas) return
+    if (!canvas || !section) return
     const ctx = canvas.getContext('2d')!
     if (!ctx) return
 
@@ -49,34 +49,53 @@ export default function Hero() {
     const GREY_NODE  = 'rgba(200,200,190,0.55)'
     const GREY_EDGE  = 'rgba(200,200,190,0.12)'
     const GREEN_EDGE = 'rgba(45,158,95,0.75)'
-    const REVEAL_R   = 110
-    const HOVER_R    = 12
-    // person icon uses bg color so it punches through the green circle
+    const REVEAL_R   = 130
+    const HOVER_R    = 14
     const BG_COLOR   = 'rgba(17,24,16,0.9)'
 
-    let W = section.offsetWidth
-    let H = section.offsetHeight
-    canvas.width = W
-    canvas.height = H
-
-    const mouse = { x: -999, y: -999 }
+    let W = 0, H = 0
 
     const nodes: NodeObj[] = RAW.map(p => ({
-      rx: p[0], ry: p[1],
-      x: p[0] * W, y: p[1] * H,
+      rx: p[0], ry: p[1], x: 0, y: 0,
       r: 5, alpha: 0, discovered: false, isGreen: false,
     }))
 
     const edges = buildEdges(nodes)
     const edgeDiscovered = new Array(edges.length).fill(false)
+
+    function resize() {
+      W = window.innerWidth
+      H = section.offsetHeight || window.innerHeight
+      canvas.width  = W
+      canvas.height = H
+      nodes.forEach(n => { n.x = n.rx * W; n.y = n.ry * H })
+    }
+
+    // Phantom cursor: slowly orbits the canvas centre so the graph is
+    // never blank. Immediately yields when the real mouse enters the section.
+    const phantom = { x: W * 0.5, y: H * 0.5, t: 0 }
+    const mouse   = { x: -9999, y: -9999, real: false }
+
+    function updatePhantom() {
+      if (mouse.real) return
+      phantom.t += 0.004
+      const tx = W  * (0.5 + Math.cos(phantom.t)        * 0.28)
+      const ty = H  * (0.5 + Math.sin(phantom.t * 0.65) * 0.22)
+      phantom.x += (tx - phantom.x) * 0.018
+      phantom.y += (ty - phantom.y) * 0.018
+    }
+
     let raf: number
 
     function tick() {
       ctx.clearRect(0, 0, W, H)
-      const mx = mouse.x, my = mouse.y
+
+      updatePhantom()
+      const mx = mouse.real ? mouse.x : phantom.x
+      const my = mouse.real ? mouse.y : phantom.y
 
       nodes.forEach(n => {
-        const dist    = Math.hypot(n.x - mx, n.y - my)
+        const dist     = Math.hypot(n.x - mx, n.y - my)
         const inRadius = dist < REVEAL_R
         const onNode   = dist < HOVER_R
         if (inRadius && onNode) n.discovered = true
@@ -88,7 +107,7 @@ export default function Hero() {
         if (nodes[a].discovered && nodes[b].discovered) edgeDiscovered[i] = true
       })
 
-      // edges
+      // Draw edges
       edges.forEach(([a, b], i) => {
         const na = nodes[a], nb = nodes[b]
         const ea = Math.min(na.alpha, nb.alpha)
@@ -105,13 +124,12 @@ export default function Hero() {
         ctx.restore()
       })
 
-      // nodes
+      // Draw nodes
       nodes.forEach(n => {
         if (n.alpha < 0.01) return
         ctx.save()
         ctx.globalAlpha = n.alpha
 
-        // outer circle
         ctx.beginPath()
         ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2)
         ctx.fillStyle   = n.isGreen ? GREEN : 'transparent'
@@ -121,13 +139,12 @@ export default function Hero() {
         ctx.stroke()
 
         if (n.isGreen) {
-          // person silhouette: head
+          // head
           ctx.beginPath()
           ctx.arc(n.x, n.y - n.r * 0.22, n.r * 0.34, 0, Math.PI * 2)
           ctx.fillStyle = BG_COLOR
           ctx.fill()
-
-          // person silhouette: body (clipped half-arc + torso)
+          // body
           ctx.save()
           ctx.beginPath()
           ctx.arc(n.x, n.y + n.r * 1.1, n.r * 0.72, 0, Math.PI, true)
@@ -147,27 +164,28 @@ export default function Hero() {
     }
 
     function onMove(e: MouseEvent) {
-      const r = section.getBoundingClientRect()
-      mouse.x = e.clientX - r.left
-      mouse.y = e.clientY - r.top
+      const rect  = canvas.getBoundingClientRect()
+      mouse.x     = e.clientX - rect.left
+      mouse.y     = e.clientY - rect.top
+      mouse.real  = true
     }
-    function onLeave() { mouse.x = -999; mouse.y = -999 }
-    function onResize() {
-      W = section.offsetWidth
-      H = section.offsetHeight
-      canvas.width = W
-      canvas.height = H
-      nodes.forEach(n => { n.x = n.rx * W; n.y = n.ry * H })
-    }
+    function onLeave() { mouse.real = false }
+    function onResize() { resize() }
+
+    resize()
+    phantom.x = W * 0.5
+    phantom.y = H * 0.5
 
     raf = requestAnimationFrame(tick)
-    section.addEventListener('mousemove', onMove)
+
+    // Use window so events fire regardless of which element is on top
+    window.addEventListener('mousemove', onMove)
     section.addEventListener('mouseleave', onLeave)
     window.addEventListener('resize', onResize, { passive: true })
 
     return () => {
       cancelAnimationFrame(raf)
-      section.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mousemove', onMove)
       section.removeEventListener('mouseleave', onLeave)
       window.removeEventListener('resize', onResize)
     }
@@ -177,12 +195,9 @@ export default function Hero() {
     <section
       id="hero"
       ref={sectionRef}
-      className="relative min-h-screen overflow-hidden bg-dark"
-      style={{
-        background: 'linear-gradient(to bottom, #111810 0%, #0f2318 70%, #1a3a28 100%)',
-      }}
+      className="relative min-h-screen overflow-hidden"
+      style={{ background: 'linear-gradient(to bottom, #111810 0%, #0f2318 70%, #1a3a28 100%)' }}
     >
-      {/* Canvas */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full pointer-events-none"
@@ -228,11 +243,7 @@ export default function Hero() {
         />
         <div
           className="w-2.5 h-2.5 border-r border-b"
-          style={{
-            borderColor: 'rgba(232,221,208,0.4)',
-            transform: 'rotate(45deg)',
-            marginTop: '-4px',
-          }}
+          style={{ borderColor: 'rgba(232,221,208,0.4)', transform: 'rotate(45deg)', marginTop: '-4px' }}
         />
       </div>
 
