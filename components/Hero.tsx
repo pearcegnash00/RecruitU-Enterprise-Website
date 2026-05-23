@@ -1,34 +1,93 @@
 'use client'
 import { useEffect, useRef } from 'react'
 
-// Seeded LCG for deterministic node positions
-function lcg(seed: number) {
-  let s = seed >>> 0
-  return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296 }
-}
-
-const _r = lcg(0xab1f9c)
-const RAW: [number, number][] = Array.from({ length: 120 }, (): [number, number] => [
-  0.03 + _r() * 0.94,
-  0.03 + _r() * 0.94,
-])
-
 type NodeObj = {
   rx: number; ry: number; x: number; y: number
-  r: number; alpha: number; discovered: boolean; isGreen: boolean
+  r: number; alpha: number; sonarAlpha: number
+  discovered: boolean; isGreen: boolean
 }
+
+type Wave = { ox: number; oy: number; r: number }
 
 function buildEdges(nodes: NodeObj[]) {
   const edges: [number, number][] = []
-  const maxDist = 0.11 // tighter threshold — real network feel, not a web
+  const MAX = 0.11
   for (let i = 0; i < nodes.length; i++) {
     for (let j = i + 1; j < nodes.length; j++) {
       const dx = nodes[i].rx - nodes[j].rx
       const dy = nodes[i].ry - nodes[j].ry
-      if (Math.sqrt(dx * dx + dy * dy) < maxDist) edges.push([i, j])
+      if (Math.sqrt(dx * dx + dy * dy) < MAX) edges.push([i, j])
     }
   }
   return edges
+}
+
+const PROT = { x0: 0.28, x1: 0.72, y0: 0.32, y1: 0.68 }
+
+function inProtected(rx: number, ry: number) {
+  return rx >= PROT.x0 && rx <= PROT.x1 && ry >= PROT.y0 && ry <= PROT.y1
+}
+
+function poissonDisk(
+  minDist: number,
+  maxPts: number,
+  mxRel: number,
+  myRel: number,
+): [number, number][] {
+  const cell = minDist / Math.SQRT2
+  const gW   = Math.ceil(1 / cell)
+  const gH   = Math.ceil(1 / cell)
+  const grid = new Int32Array(gW * gH).fill(-1)
+  const pts: [number, number][] = []
+  const active: number[] = []
+
+  const valid = (x: number, y: number): boolean => {
+    if (x < mxRel || x > 1 - mxRel || y < myRel || y > 1 - myRel) return false
+    if (inProtected(x, y)) return false
+    const gx = Math.floor(x / cell)
+    const gy = Math.floor(y / cell)
+    for (let dy2 = -2; dy2 <= 2; dy2++) {
+      for (let dx2 = -2; dx2 <= 2; dx2++) {
+        const nx = gx + dx2, ny = gy + dy2
+        if (nx < 0 || nx >= gW || ny < 0 || ny >= gH) continue
+        const idx = grid[ny * gW + nx]
+        if (idx < 0) continue
+        const p = pts[idx]
+        const ddx = p[0] - x, ddy = p[1] - y
+        if (ddx * ddx + ddy * ddy < minDist * minDist) return false
+      }
+    }
+    return true
+  }
+
+  const add = (x: number, y: number) => {
+    grid[Math.floor(y / cell) * gW + Math.floor(x / cell)] = pts.length
+    active.push(pts.length)
+    pts.push([x, y])
+  }
+
+  let sx = 0, sy = 0, attempts = 0
+  do {
+    sx = mxRel + Math.random() * (1 - 2 * mxRel)
+    sy = myRel + Math.random() * (1 - 2 * myRel)
+  } while (inProtected(sx, sy) && ++attempts < 100)
+  add(sx, sy)
+
+  while (active.length > 0 && pts.length < maxPts) {
+    const ai  = Math.floor(Math.random() * active.length)
+    const src = pts[active[ai]]
+    let found = false
+    for (let k = 0; k < 30; k++) {
+      const angle = Math.random() * Math.PI * 2
+      const r     = minDist * (1 + Math.random())
+      const nx    = src[0] + Math.cos(angle) * r
+      const ny    = src[1] + Math.sin(angle) * r
+      if (valid(nx, ny)) { add(nx, ny); found = true; break }
+    }
+    if (!found) active.splice(ai, 1)
+  }
+
+  return pts
 }
 
 export default function Hero() {
@@ -41,60 +100,100 @@ export default function Hero() {
     const canvas  = canvasRef.current!
     const section = sectionRef.current!
     if (!canvas || !section) return
-    const ctx = canvas.getContext('2d')!
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     if (!ctx) return
 
     const GREEN      = '#2D9E5F'
     const GREY_NODE  = 'rgba(200,200,190,0.45)'
     const GREY_EDGE  = 'rgba(200,200,190,0.10)'
     const GREEN_EDGE = 'rgba(45,158,95,0.65)'
+    const BG_COLOR   = 'rgba(17,24,16,0.9)'
     const REVEAL_R   = 130
     const HOVER_R    = 14
-    const BG_COLOR   = 'rgba(17,24,16,0.9)'
+    const MIN_DIST   = 0.06
 
     let W = 0, H = 0
+    let isMobile = false
+    let nodes: NodeObj[]        = []
+    let edges: [number, number][] = []
+    let edgeDiscovered: boolean[] = []
 
-    const nodes: NodeObj[] = RAW.map(p => ({
-      rx: p[0], ry: p[1], x: 0, y: 0,
-      r: 5, alpha: 0, discovered: false, isGreen: false,
-    }))
+    function generateNodes() {
+      isMobile     = W < 768
+      const maxPts = isMobile ? 60 : 120
+      const mxRel  = 20 / W
+      const myRel  = 20 / H
 
-    const edges = buildEdges(nodes)
-    const edgeDiscovered = new Array(edges.length).fill(false)
+      const raw = poissonDisk(MIN_DIST, maxPts, mxRel, myRel)
+      nodes = raw.map(([rx, ry]) => {
+        const jx  = (Math.random() - 0.5) * 0.03
+        const jy  = (Math.random() - 0.5) * 0.03
+        const jrx = Math.max(mxRel, Math.min(1 - mxRel, rx + jx))
+        const jry = Math.max(myRel, Math.min(1 - myRel, ry + jy))
+        return {
+          rx: jrx, ry: jry, x: jrx * W, y: jry * H,
+          r: 5, alpha: 0, sonarAlpha: 0, discovered: false, isGreen: false,
+        }
+      })
+      edges          = buildEdges(nodes)
+      edgeDiscovered = new Array(edges.length).fill(false)
+    }
 
     function resize() {
       W = window.innerWidth
       H = section.offsetHeight || window.innerHeight
       canvas.width  = W
       canvas.height = H
-      nodes.forEach(n => { n.x = n.rx * W; n.y = n.ry * H })
+      if (nodes.length === 0) {
+        generateNodes()
+      } else {
+        isMobile = W < 768
+        nodes.forEach(n => { n.x = n.rx * W; n.y = n.ry * H })
+      }
     }
 
-    // Phantom cursor orbits the canvas so the graph is never blank on load
+    // Phantom cursor orbits centre until real mouse takes over
     const phantom = { x: 0, y: 0, t: 0 }
     const mouse   = { x: -9999, y: -9999, real: false }
 
     function updatePhantom() {
       if (mouse.real) return
       phantom.t += 0.004
-      const tx = W * (0.5 + Math.cos(phantom.t)        * 0.28)
-      const ty = H * (0.5 + Math.sin(phantom.t * 0.65) * 0.22)
-      phantom.x += (tx - phantom.x) * 0.018
-      phantom.y += (ty - phantom.y) * 0.018
+      phantom.x += (W * (0.5 + Math.cos(phantom.t) * 0.28) - phantom.x) * 0.018
+      phantom.y += (H * (0.5 + Math.sin(phantom.t * 0.65) * 0.22) - phantom.y) * 0.018
+    }
+
+    // Sonar state
+    const waves: Wave[] = []
+    let nextWaveIn      = 6000 + Math.random() * 4000
+    let lastTime        = 0
+
+    function spawnWave() {
+      let ox = 0, oy = 0, t = 0
+      do {
+        ox = Math.random() * W
+        oy = Math.random() * H
+      } while (inProtected(ox / W, oy / H) && ++t < 50)
+      waves.push({ ox, oy, r: 0 })
     }
 
     let raf: number
 
-    function tick() {
+    function tick(time: number) {
+      const dt = lastTime ? Math.min(time - lastTime, 50) : 16
+      lastTime = time
+
       ctx.clearRect(0, 0, W, H)
       updatePhantom()
+
       const mx = mouse.real ? mouse.x : phantom.x
       const my = mouse.real ? mouse.y : phantom.y
 
+      // Cursor interaction
       nodes.forEach(n => {
-        const dist    = Math.hypot(n.x - mx, n.y - my)
-        const inR     = dist < REVEAL_R
-        const onNode  = dist < HOVER_R
+        const dist   = Math.hypot(n.x - mx, n.y - my)
+        const inR    = dist < REVEAL_R
+        const onNode = dist < HOVER_R
         if (inR && onNode) n.discovered = true
         n.alpha  += ((inR ? 1 : 0) - n.alpha) * 0.14
         n.isGreen = n.discovered || (inR && onNode)
@@ -104,9 +203,43 @@ export default function Hero() {
         if (nodes[a].discovered && nodes[b].discovered) edgeDiscovered[i] = true
       })
 
+      // Sonar waves — single loop handles spawn, advance, illumination, expiry
+      if (!isMobile) {
+        nextWaveIn -= dt
+        if (nextWaveIn <= 0 && waves.length < 2) {
+          spawnWave()
+          nextWaveIn = 6000 + Math.random() * 4000
+        }
+
+        for (let wi = waves.length - 1; wi >= 0; wi--) {
+          const wave  = waves[wi]
+          const prevR = wave.r
+          wave.r     += 120 * dt / 1000
+
+          if (wave.r > 280) { waves.splice(wi, 1); continue }
+
+          for (const n of nodes) {
+            if (n.discovered) continue
+            if (inProtected(n.rx, n.ry)) continue
+            if (Math.hypot(n.x - mx, n.y - my) < REVEAL_R) continue
+            const nd = Math.hypot(n.x - wave.ox, n.y - wave.oy)
+            if (nd > prevR && nd <= wave.r) n.sonarAlpha = 0.15
+          }
+        }
+      }
+
+      // Decay sonar illumination over 800ms
+      nodes.forEach(n => {
+        if (n.sonarAlpha > 0) n.sonarAlpha = Math.max(0, n.sonarAlpha - 0.15 * dt / 800)
+      })
+
+      // Draw edges
       edges.forEach(([a, b], i) => {
         const na = nodes[a], nb = nodes[b]
-        const ea = Math.min(na.alpha, nb.alpha)
+        const ea = Math.min(
+          Math.max(na.alpha, na.sonarAlpha),
+          Math.max(nb.alpha, nb.sonarAlpha),
+        )
         if (ea < 0.01) return
         const green = edgeDiscovered[i] || (na.isGreen && nb.isGreen)
         ctx.save()
@@ -120,10 +253,12 @@ export default function Hero() {
         ctx.restore()
       })
 
+      // Draw nodes
       nodes.forEach(n => {
-        if (n.alpha < 0.01) return
+        const ra = Math.max(n.alpha, n.sonarAlpha)
+        if (ra < 0.01) return
         ctx.save()
-        ctx.globalAlpha = n.alpha
+        ctx.globalAlpha = ra
         ctx.beginPath()
         ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2)
         ctx.fillStyle   = n.isGreen ? GREEN : 'transparent'
@@ -159,8 +294,15 @@ export default function Hero() {
       mouse.y    = e.clientY - rect.top
       mouse.real = true
     }
-    function onLeave() { mouse.real = false }
-    function onResize() { resize() }
+    function onLeave()  { mouse.real = false }
+    function onResize() {
+      W = window.innerWidth
+      H = section.offsetHeight || window.innerHeight
+      isMobile      = W < 768
+      canvas.width  = W
+      canvas.height = H
+      nodes.forEach(n => { n.x = n.rx * W; n.y = n.ry * H })
+    }
 
     resize()
     phantom.x = W * 0.5
@@ -198,25 +340,20 @@ export default function Hero() {
           className="font-display font-bold text-beige leading-[1.06] tracking-[-0.03em]"
           style={{ fontSize: 'clamp(32px,5.5vw,56px)' }}
         >
-          Your people knowledge.<br />
-          Our people graph.<br />
-          <span className="text-chartreuse">One intelligence layer.</span>
+          Your most underutilized asset<br />
+          isn&apos;t financial. It&apos;s human.<br />
+          <span style={{ color: '#2D9E5F' }}>One intelligence system.</span>
         </h1>
 
-        <p className="mt-6 font-sans text-[15px] text-beige/50 max-w-[440px] leading-relaxed">
-          We connect the people data your firm has spent decades building:
-          queryable, actionable, and compounding.
+        <p
+          className="font-sans text-[14px] leading-[1.75] max-w-[520px] text-center"
+          style={{ marginTop: '20px', color: 'rgba(232,221,208,0.55)' }}
+        >
+          We deploy inside your organization, turning your people knowledge into
+          living infrastructure and connecting it to the market. So whenever your
+          firm needs to know something about people: a hire, a prospect, a
+          relationship, a signal — the answer is already there. Yesterday.
         </p>
-
-        <div className="mt-8 pointer-events-auto">
-          <a
-            href="#start"
-            className="font-sans text-[13px] font-semibold text-dark bg-beige hover:bg-beige/90 px-5 py-2 rounded-full transition-colors duration-200"
-            style={{ letterSpacing: '0.04em' }}
-          >
-            Get Started
-          </a>
-        </div>
       </div>
 
       <div
