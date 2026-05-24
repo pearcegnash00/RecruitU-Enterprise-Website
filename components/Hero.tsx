@@ -1,93 +1,165 @@
 'use client'
 import { useEffect, useRef } from 'react'
 
-type NodeObj = {
-  rx: number; ry: number; x: number; y: number
-  r: number; alpha: number; sonarAlpha: number
-  discovered: boolean; isGreen: boolean
+/* ─── 400 fictional financial services names ─── */
+const NAMES: readonly string[] = [
+  // Anglo-Saxon (120)
+  'James Harrington','William Fletcher','Catherine Moore','Thomas Davies',
+  'Robert Wilson','Elizabeth Thompson','Charles Taylor','Margaret Anderson',
+  'Henry Brown','Victoria Jones','Richard Clark','Eleanor Smith',
+  'Frederick Hall','Dorothy Walker','Edward Turner','Frances Allen',
+  'Arthur Phillips','Constance Green','Walter Harris','Beatrice Martin',
+  'George Lewis','Helen Baker','Harold Adams','Grace Campbell',
+  'Leonard Rogers','Alice Reed','Douglas Cook','Edith Morgan',
+  'Raymond Bell','Charlotte Murphy','Lawrence Bailey','Barbara Richardson',
+  'Alan Cox','Patricia Howard','Philip Ward','Susan Peterson',
+  'Roger Collins','Carol Stewart','Albert Young','Linda King',
+  'Francis Walker','Diane Wright','Victor Edwards','Jean White',
+  'Howard Scott','Judith Green','Eugene Davies','Sandra Campbell',
+  'Theodore Morris','Marilyn Barnes','Clarence Hughes','Nancy Ellis',
+  'Herbert Fox','Sharon Mitchell','Stanley Perry','Christine Patterson',
+  'Ralph Webb','Deborah Powell','Harry Crawford','Cheryl Reid',
+  'Gerald McDonald','Cynthia Ross','Frank Morrison','Karen Chapman',
+  'Kenneth Price','Laura Gibson','Ronald Porter','Jennifer Hamilton',
+  'Donald Simpson','Rebecca Warren','Russell Bryant','Claire Foster',
+  'Patrick Mason','Louise Burke','Michael Robertson','Andrew Dixon',
+  'David Harrison','Benjamin Clarke','Oliver Wright','Samuel Evans',
+  'Daniel Turner','Christopher Davies','Simon Robinson','Nicholas Parker',
+  'Jonathan Hill','Timothy Watson','Matthew Hayes','Anthony Hunter',
+  'Stephen Gibson','Brandon Fox','Justin Hughes','Lawrence Ellis',
+  'Marcus Griffin','Nathan Blake','Joshua Carter','Ryan Mitchell',
+  'Ethan Lawson','Dylan Perry','Connor Hughes','Liam Patterson',
+  'Austin Webb','Caleb Powell','Derek Walsh','Neil Crawford',
+  'Gareth Reid','Stuart McDonald','Sarah Wellington','Victoria Pemberton',
+  'Charlotte Huntington','Emily Cavendish','Diana Westbrook','Patricia Northwood',
+  'Jennifer Cranfield','Samantha Wellington','Christine Fordham','Margaret Fairfax',
+  'Elizabeth Ashfield','James Blackwood','William Ashford','George Worthington',
+  // East Asian (40)
+  'Michelle Chen','David Liang','Sarah Kim','James Tan',
+  'Kevin Wong','Jennifer Liu','Brian Lee','Amy Park',
+  'Andrew Zhang','Christina Cho','Jason Wang','Emily Yang',
+  'Michael Zhou','Linda Wu','Christopher Huang','Angela Xu',
+  'Steven Zhao','Grace Lin','Eric Guo','Alice Ma',
+  'Patrick Sun','Karen Zheng','Richard Ha','Helen Yoon',
+  'Mark Kwon','Jessica Choi','Alan Kang','Cynthia Jeon',
+  'William Oh','Stephanie Chang','Kevin Ng','Sandra Yu',
+  'Thomas Yin','Lisa Bae','Robert Seo','Nancy Han',
+  'Philip Moon','Melissa Chung','George Lim','Sharon Fong',
+  // South Asian (40)
+  'Priya Patel','Arjun Sharma','Neha Mehta','Rohan Gupta',
+  'Rahul Singh','Anjali Kumar','Deepak Kapoor','Divya Malhotra',
+  'Vikram Agarwal','Kavita Desai','Sanjay Joshi','Shreya Shah',
+  'Nikhil Nair','Pooja Reddy','Amit Pillai','Ananya Rao',
+  'Vivek Iyer','Ishita Bhat','Kiran Srivastava','Riya Verma',
+  'Aditya Trivedi','Simran Pandey','Dev Mishra','Tanvi Saxena',
+  'Sidharth Chopra','Kabir Krishnan','Isha Venkataraman','Rishi Balakrishnan',
+  'Pranav Subramaniam','Aditi Nambiar','Arun Nair','Suresh Iyer',
+  'Ankit Patel','Niti Sharma','Trisha Kapoor','Meera Malhotra',
+  'Varun Agarwal','Siddharth Gupta','Pooja Mehta','Kabir Sharma',
+  // African (40)
+  'Amara Okafor','David Mensah','Fatima Diallo','Samuel Achebe',
+  'Emmanuel Eze','Kwame Nwosu','Adaeze Okonkwo','Ibrahim Asante',
+  'Felix Boateng','Ngozi Adjei','Kofi Darko','Chioma Otieno',
+  'Obinna Kamau','Kemi Mutua','Charles Abiodun','Victor Adeyemi',
+  'Edwin Babangida','Yetunde Oyelaran','Patrick Taiwo','Bisi Fagbemi',
+  'Tunde Obi','Seun Adewale','Nnamdi Ike','Lekan Chukwuemeka',
+  'Aminata Toure','Abena Asare','Kwabena Mensah','Aisha Ibrahim',
+  'Seydou Coulibaly','Mariama Bah','Chidi Eze','Ike Nwosu',
+  'Adewale Okonkwo','Olumide Adeyemi','Funmilayo Afolabi','Ayodeji Bankole',
+  'Chiamaka Nnaji','Obiageli Chukwuma','Uche Anyanwu','Emeka Obi',
+  // Hispanic (40)
+  'Carlos Reyes','Isabella Vega','Marco Santos','Diego Lopez',
+  'Sofia Rodriguez','Alejandro Martinez','Valentina Garcia','Rafael Hernandez',
+  'Camila Gonzalez','Eduardo Perez','Fernanda Flores','Felipe Rivera',
+  'Adriana Torres','Sergio Ramirez','Gabriela Morales','Luis Gutierrez',
+  'Catalina Jimenez','Pablo Ruiz','Veronica Alvarez','Ricardo Mendoza',
+  'Jorge Silva','Daniela Castro','Fernando Vargas','Elena Rojas',
+  'Miguel Herrera','Patricia Cruz','Andres Medina','Monica Salinas',
+  'Roberto Delgado','Hector Fuentes','Rodrigo Vargas','Ana Castillo',
+  'Manuel Romero','Alejandra Ramos','Oscar Contreras','Laura Herrera',
+  'Alberto Medina','Luciana Torres','Emilio Fuentes','Valeria Cruz',
+  // European (75)
+  'Sophie Laurent','Pierre Dubois','Hans Weber','Elena Rossi',
+  'Klaus Fischer','Isabelle Bernard','Thomas Mueller','Marco Bianchi',
+  'Antoine Martin','Francesca Esposito','Werner Schmidt','Chloe Rousseau',
+  'Friedrich Hoffmann','Claudia Romano','Nicolas Petit','Giuseppe Ferrari',
+  'Ingrid Braun','Clement Moreau','Antonio Colombo','Hilde Schaefer',
+  'Luca Ricci','Viktor Novak','Ekaterina Sokolova','Dmitry Volkov',
+  'Marta Kowalski','Janusz Nowak','Agnieszka Wojcik','Alistair MacKenzie',
+  'Fiona Campbell','Hamish Stewart','Niamh O\'Brien','Declan Murphy',
+  'Brigid Walsh','Lars Andersen','Astrid Nilsson','Erik Johansson',
+  'Ingrid Bergstrom','Magnus Larsson','Helga Hansen','Rolf Nielsen',
+  'Karl Becker','Heinz Schwarz','Franz Kruger','Dietrich Braun',
+  'Johan Vermeer','Pieter de Groot','Anneke Bakker','Hendrik Van der Berg',
+  'Martina Schubert','Bjorn Lindqvist','Sven Karlsson','Anna Lindberg',
+  'Olaf Gustafsson','Freya Magnusson','Dmitri Petrov','Natasha Ivanova',
+  'Pavel Sorokin','Olga Popova','Vladimir Kuznetsov','Yuri Morozov',
+  'Anastasia Lebedeva','Sergei Fedorov','Tatiana Orlova','Maxim Kozlov',
+  'Lea Moreau','Jules Leblanc','Camille Fontaine','Baptiste Renard',
+  'Margot Chevalier','Gianluca Ferretti','Valentina Bruno','Roberto Mancini',
+  'Alessia Conti','Stefano Palumbo','Gunnar Eriksson',
+  // Additional mix (45)
+  'Charles Middleton','Catherine Blackwell','John Fernwood','Mary Silverstone',
+  'Robert Goldsmith','Benjamin Ironwood','Laura Clearwater','Daniel Bridgeford',
+  'Helen Stonefield','James Greenwood','Sarah Pemberton','Mark Whitmore',
+  'Susan Hartley','Peter Dunmore','Rachel Fairfield','Paul Whitstone',
+  'Sarah Lockwood','Philip Ridgeway','Janet Briarwood','Colin Hartfield',
+  'Amanda Westmore','Geoffrey Blackmore','Carolyn Farnsworth','Clive Wentworth',
+  'Spencer Wellington','Lindsay Whitmore','Trevor Ashton','Morgan Sinclair',
+  'Whitney Bradford','Cameron Holt','Peyton Graves','Jordan Whitfield',
+  'Madison Thornton','Christopher Blackwell','Amanda Reynolds','Nathan Cromwell',
+  'Allison Fairmont','Gregory Pemberton','Diana Blackwood','Maxwell Crawford',
+  'Harriet Worthington','Edmund Ashworth','Cecelia Stoneleigh','Howard Bridgeman',
+  'Miriam Cavendish',
+]
+
+type NameObj = {
+  text: string
+  rx: number; ry: number
+  x: number; y: number
+  rotation: number
+  baseOpacity: number
+  fontSize: number
+  pulseSpeed: number
+  pulseOffset: number
+  revealT: number
+  hoverT: number
 }
 
-type Wave = { ox: number; oy: number; r: number }
+/* Loose grid placement — even distribution, no dead zones, protected zone excluded */
+function placeNames(W: number, H: number, count: number): [number, number][] {
+  const PROT = { x0: 0.25, x1: 0.75, y0: 0.28, y1: 0.72 }
+  const aspect = W / H
+  const cols   = Math.max(16, Math.ceil(Math.sqrt(count * aspect * 2.5)))
+  const rows   = Math.max(10, Math.ceil(cols / aspect))
 
-function buildEdges(nodes: NodeObj[]) {
-  const edges: [number, number][] = []
-  const MAX = 0.11
-  for (let i = 0; i < nodes.length; i++) {
-    for (let j = i + 1; j < nodes.length; j++) {
-      const dx = nodes[i].rx - nodes[j].rx
-      const dy = nodes[i].ry - nodes[j].ry
-      if (Math.sqrt(dx * dx + dy * dy) < MAX) edges.push([i, j])
+  const candidates: [number, number][] = []
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const rx = Math.max(0.004, Math.min(0.996,
+        (c + 0.5) / cols + (Math.random() - 0.5) * 0.8 / cols))
+      const ry = Math.max(0.004, Math.min(0.996,
+        (r + 0.5) / rows + (Math.random() - 0.5) * 0.8 / rows))
+      if (rx >= PROT.x0 && rx <= PROT.x1 && ry >= PROT.y0 && ry <= PROT.y1) continue
+      candidates.push([rx, ry])
     }
   }
-  return edges
-}
 
-const PROT = { x0: 0.28, x1: 0.72, y0: 0.32, y1: 0.68 }
-
-function inProtected(rx: number, ry: number) {
-  return rx >= PROT.x0 && rx <= PROT.x1 && ry >= PROT.y0 && ry <= PROT.y1
-}
-
-function poissonDisk(
-  minDist: number,
-  maxPts: number,
-  mxRel: number,
-  myRel: number,
-): [number, number][] {
-  const cell = minDist / Math.SQRT2
-  const gW   = Math.ceil(1 / cell)
-  const gH   = Math.ceil(1 / cell)
-  const grid = new Int32Array(gW * gH).fill(-1)
-  const pts: [number, number][] = []
-  const active: number[] = []
-
-  const valid = (x: number, y: number): boolean => {
-    if (x < mxRel || x > 1 - mxRel || y < myRel || y > 1 - myRel) return false
-    if (inProtected(x, y)) return false
-    const gx = Math.floor(x / cell)
-    const gy = Math.floor(y / cell)
-    for (let dy2 = -2; dy2 <= 2; dy2++) {
-      for (let dx2 = -2; dx2 <= 2; dx2++) {
-        const nx = gx + dx2, ny = gy + dy2
-        if (nx < 0 || nx >= gW || ny < 0 || ny >= gH) continue
-        const idx = grid[ny * gW + nx]
-        if (idx < 0) continue
-        const p = pts[idx]
-        const ddx = p[0] - x, ddy = p[1] - y
-        if (ddx * ddx + ddy * ddy < minDist * minDist) return false
-      }
-    }
-    return true
+  // Shuffle
+  for (let i = candidates.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [candidates[i], candidates[j]] = [candidates[j], candidates[i]]
   }
 
-  const add = (x: number, y: number) => {
-    grid[Math.floor(y / cell) * gW + Math.floor(x / cell)] = pts.length
-    active.push(pts.length)
-    pts.push([x, y])
+  // Fallback for edge cases
+  while (candidates.length < count) {
+    let rx: number, ry: number
+    do { rx = Math.random(); ry = Math.random() }
+    while (rx >= PROT.x0 && rx <= PROT.x1 && ry >= PROT.y0 && ry <= PROT.y1)
+    candidates.push([rx, ry])
   }
 
-  let sx = 0, sy = 0, attempts = 0
-  do {
-    sx = mxRel + Math.random() * (1 - 2 * mxRel)
-    sy = myRel + Math.random() * (1 - 2 * myRel)
-  } while (inProtected(sx, sy) && ++attempts < 100)
-  add(sx, sy)
-
-  while (active.length > 0 && pts.length < maxPts) {
-    const ai  = Math.floor(Math.random() * active.length)
-    const src = pts[active[ai]]
-    let found = false
-    for (let k = 0; k < 30; k++) {
-      const angle = Math.random() * Math.PI * 2
-      const r     = minDist * (1 + Math.random())
-      const nx    = src[0] + Math.cos(angle) * r
-      const ny    = src[1] + Math.sin(angle) * r
-      if (valid(nx, ny)) { add(nx, ny); found = true; break }
-    }
-    if (!found) active.splice(ai, 1)
-  }
-
-  return pts
+  return candidates.slice(0, count)
 }
 
 export default function Hero() {
@@ -103,40 +175,31 @@ export default function Hero() {
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     if (!ctx) return
 
-    const GREEN      = '#2D9E5F'
-    const GREY_NODE  = 'rgba(200,200,190,0.45)'
-    const GREY_EDGE  = 'rgba(200,200,190,0.10)'
-    const GREEN_EDGE = 'rgba(45,158,95,0.65)'
-    const BG_COLOR   = 'rgba(17,24,16,0.9)'
-    const REVEAL_R   = 130
-    const HOVER_R    = 14
-    const MIN_DIST   = 0.06
-
     let W = 0, H = 0
     let isMobile = false
-    let nodes: NodeObj[]        = []
-    let edges: [number, number][] = []
-    let edgeDiscovered: boolean[] = []
+    let names: NameObj[] = []
+    const mouse = { x: -9999, y: -9999 }
 
-    function generateNodes() {
-      isMobile     = W < 768
-      const maxPts = isMobile ? 60 : 120
-      const mxRel  = 20 / W
-      const myRel  = 20 / H
+    function buildNames() {
+      isMobile    = W < 768
+      const count = isMobile ? 150 : 400
+      const pool  = NAMES.slice(0, count)
+      const pos   = placeNames(W, H, count)
 
-      const raw = poissonDisk(MIN_DIST, maxPts, mxRel, myRel)
-      nodes = raw.map(([rx, ry]) => {
-        const jx  = (Math.random() - 0.5) * 0.03
-        const jy  = (Math.random() - 0.5) * 0.03
-        const jrx = Math.max(mxRel, Math.min(1 - mxRel, rx + jx))
-        const jry = Math.max(myRel, Math.min(1 - myRel, ry + jy))
+      names = pool.map((text, i) => {
+        const rnd = Math.random()
+        const fontSize = rnd < 0.35 ? 10 : rnd < 0.70 ? 11 : rnd < 0.80 ? 12 : rnd < 0.90 ? 13 : 14
+        const [rx, ry] = pos[i]
         return {
-          rx: jrx, ry: jry, x: jrx * W, y: jry * H,
-          r: 5, alpha: 0, sonarAlpha: 0, discovered: false, isGreen: false,
+          text, rx, ry, x: rx * W, y: ry * H,
+          rotation:    (Math.random() - 0.5) * 24 * (Math.PI / 180),
+          baseOpacity: 0.04 + Math.random() * 0.08,
+          fontSize,
+          pulseSpeed:  3000 + Math.random() * 5000,
+          pulseOffset: Math.random(),
+          revealT: 0, hoverT: 0,
         }
       })
-      edges          = buildEdges(nodes)
-      edgeDiscovered = new Array(edges.length).fill(false)
     }
 
     function resize() {
@@ -144,147 +207,57 @@ export default function Hero() {
       H = section.offsetHeight || window.innerHeight
       canvas.width  = W
       canvas.height = H
-      if (nodes.length === 0) {
-        generateNodes()
+      if (names.length === 0) {
+        buildNames()
       } else {
         isMobile = W < 768
-        nodes.forEach(n => { n.x = n.rx * W; n.y = n.ry * H })
+        names.forEach(n => { n.x = n.rx * W; n.y = n.ry * H })
       }
-    }
-
-    // Phantom cursor orbits centre until real mouse takes over
-    const phantom = { x: 0, y: 0, t: 0 }
-    const mouse   = { x: -9999, y: -9999, real: false }
-
-    function updatePhantom() {
-      if (mouse.real) return
-      phantom.t += 0.004
-      phantom.x += (W * (0.5 + Math.cos(phantom.t) * 0.28) - phantom.x) * 0.018
-      phantom.y += (H * (0.5 + Math.sin(phantom.t * 0.65) * 0.22) - phantom.y) * 0.018
-    }
-
-    // Sonar state
-    const waves: Wave[] = []
-    let nextWaveIn      = 6000 + Math.random() * 4000
-    let lastTime        = 0
-
-    function spawnWave() {
-      let ox = 0, oy = 0, t = 0
-      do {
-        ox = Math.random() * W
-        oy = Math.random() * H
-      } while (inProtected(ox / W, oy / H) && ++t < 50)
-      waves.push({ ox, oy, r: 0 })
     }
 
     let raf: number
 
     function tick(time: number) {
-      const dt = lastTime ? Math.min(time - lastTime, 50) : 16
-      lastTime = time
-
       ctx.clearRect(0, 0, W, H)
-      updatePhantom()
 
-      const mx = mouse.real ? mouse.x : phantom.x
-      const my = mouse.real ? mouse.y : phantom.y
+      const mx = mouse.x
+      const my = mouse.y
 
-      // Cursor interaction
-      nodes.forEach(n => {
-        const dist   = Math.hypot(n.x - mx, n.y - my)
-        const inR    = dist < REVEAL_R
-        const onNode = dist < HOVER_R
-        if (inR && onNode) n.discovered = true
-        n.alpha  += ((inR ? 1 : 0) - n.alpha) * 0.14
-        n.isGreen = n.discovered || (inR && onNode)
-      })
+      names.forEach(n => {
+        // Ambient pulse — independent sine per name
+        const pulsePct = (time / n.pulseSpeed + n.pulseOffset) % 1
+        const pulse    = Math.sin(pulsePct * Math.PI * 2) * 0.5 + 0.5
+        const pulseOp  = n.baseOpacity + pulse * 0.06
 
-      edges.forEach(([a, b], i) => {
-        if (nodes[a].discovered && nodes[b].discovered) edgeDiscovered[i] = true
-      })
-
-      // Sonar waves — single loop handles spawn, advance, illumination, expiry
-      if (!isMobile) {
-        nextWaveIn -= dt
-        if (nextWaveIn <= 0 && waves.length < 2) {
-          spawnWave()
-          nextWaveIn = 6000 + Math.random() * 4000
+        // Cursor interaction
+        if (!isMobile) {
+          const dist     = Math.hypot(n.x - mx, n.y - my)
+          const inReveal = dist < 110
+          const inHover  = dist < 40
+          n.revealT += ((inReveal ? 1 : 0) - n.revealT) * (inReveal ? 0.28 : 0.07)
+          n.hoverT  += ((inHover  ? 1 : 0) - n.hoverT)  * 0.2
         }
 
-        for (let wi = waves.length - 1; wi >= 0; wi--) {
-          const wave  = waves[wi]
-          const prevR = wave.r
-          wave.r     += 120 * dt / 1000
+        // Final opacity blends pulse with cursor reveal
+        const opacity = pulseOp + n.revealT * (0.85 - pulseOp)
+        if (opacity < 0.005) return
 
-          if (wave.r > 280) { waves.splice(wi, 1); continue }
+        // Color: warm white → brand green as hoverT increases
+        const cR = Math.round(232 + (45  - 232) * n.hoverT)
+        const cG = Math.round(221 + (158 - 221) * n.hoverT)
+        const cB = Math.round(208 + (95  - 208) * n.hoverT)
 
-          for (const n of nodes) {
-            if (n.discovered) continue
-            if (inProtected(n.rx, n.ry)) continue
-            if (Math.hypot(n.x - mx, n.y - my) < REVEAL_R) continue
-            const nd = Math.hypot(n.x - wave.ox, n.y - wave.oy)
-            if (nd > prevR && nd <= wave.r) n.sonarAlpha = 0.15
-          }
-        }
-      }
+        const fw    = n.revealT > 0.5 ? 600 : 400
+        const scale = 1 + n.hoverT * 0.08
 
-      // Decay sonar illumination over 800ms
-      nodes.forEach(n => {
-        if (n.sonarAlpha > 0) n.sonarAlpha = Math.max(0, n.sonarAlpha - 0.15 * dt / 800)
-      })
-
-      // Draw edges
-      edges.forEach(([a, b], i) => {
-        const na = nodes[a], nb = nodes[b]
-        const ea = Math.min(
-          Math.max(na.alpha, na.sonarAlpha),
-          Math.max(nb.alpha, nb.sonarAlpha),
-        )
-        if (ea < 0.01) return
-        const green = edgeDiscovered[i] || (na.isGreen && nb.isGreen)
         ctx.save()
-        ctx.globalAlpha = ea
-        ctx.beginPath()
-        ctx.moveTo(na.x, na.y)
-        ctx.lineTo(nb.x, nb.y)
-        ctx.strokeStyle = green ? GREEN_EDGE : GREY_EDGE
-        ctx.lineWidth   = green ? 1 : 0.5
-        ctx.stroke()
-        ctx.restore()
-      })
-
-      // Draw nodes
-      nodes.forEach(n => {
-        const ra = Math.max(n.alpha, n.sonarAlpha)
-        if (ra < 0.01) return
-        ctx.save()
-        ctx.globalAlpha = ra
-        ctx.beginPath()
-        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2)
-        ctx.fillStyle   = n.isGreen ? GREEN : 'transparent'
-        ctx.fill()
-        // GREY_NODE has built-in 0.45 alpha — use solid rgb for sonar-only so
-        // globalAlpha=0.15 gives a true 15% opacity stroke instead of 6.7%
-        const sonarOnly = n.sonarAlpha > 0 && n.alpha < 0.01
-        ctx.strokeStyle = n.isGreen ? GREEN : (sonarOnly ? 'rgb(200,200,190)' : GREY_NODE)
-        ctx.lineWidth   = n.isGreen ? 1.5 : 1
-        ctx.stroke()
-        if (n.isGreen) {
-          ctx.beginPath()
-          ctx.arc(n.x, n.y - n.r * 0.22, n.r * 0.34, 0, Math.PI * 2)
-          ctx.fillStyle = BG_COLOR
-          ctx.fill()
-          ctx.save()
-          ctx.beginPath()
-          ctx.arc(n.x, n.y + n.r * 1.1, n.r * 0.72, 0, Math.PI, true)
-          ctx.rect(n.x - n.r, n.y - n.r * 0.1, n.r * 2, n.r * 1.2)
-          ctx.clip()
-          ctx.beginPath()
-          ctx.arc(n.x, n.y + n.r * 0.68, n.r * 0.62, 0, Math.PI * 2)
-          ctx.fillStyle = BG_COLOR
-          ctx.fill()
-          ctx.restore()
-        }
+        ctx.translate(n.x, n.y)
+        ctx.rotate(n.rotation)
+        if (n.hoverT > 0.01) ctx.scale(scale, scale)
+        ctx.globalAlpha = opacity
+        ctx.fillStyle   = `rgb(${cR},${cG},${cB})`
+        ctx.font        = `${fw} ${n.fontSize}px Inter, sans-serif`
+        ctx.fillText(n.text, 0, 0)
         ctx.restore()
       })
 
@@ -293,25 +266,26 @@ export default function Hero() {
 
     function onMove(e: MouseEvent) {
       const rect = canvas.getBoundingClientRect()
-      mouse.x    = e.clientX - rect.left
-      mouse.y    = e.clientY - rect.top
-      mouse.real = true
+      mouse.x = e.clientX - rect.left
+      mouse.y = e.clientY - rect.top
     }
-    function onLeave()  { mouse.real = false }
+    function onLeave()  { mouse.x = -9999; mouse.y = -9999 }
     function onResize() {
       W = window.innerWidth
       H = section.offsetHeight || window.innerHeight
-      isMobile      = W < 768
+      isMobile = W < 768
       canvas.width  = W
       canvas.height = H
-      nodes.forEach(n => { n.x = n.rx * W; n.y = n.ry * H })
+      names.forEach(n => { n.x = n.rx * W; n.y = n.ry * H })
     }
 
     resize()
-    phantom.x = W * 0.5
-    phantom.y = H * 0.5
 
-    raf = requestAnimationFrame(tick)
+    // Wait for Inter to be in the font cache before first frame
+    document.fonts.ready.then(() => {
+      raf = requestAnimationFrame(tick)
+    })
+
     window.addEventListener('mousemove', onMove)
     section.addEventListener('mouseleave', onLeave)
     window.addEventListener('resize', onResize, { passive: true })
